@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+/*
+  BEDIFF Design Tokens — Tailwind v4 @theme directive.
+  These map directly to the tailwind.config.ts values but are the actual
+  source-of-truth for v4's utility class generation.
+*/
+@theme {
+  /* Colors */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-border: #E5E5E5;
+  --color-gray-400: #9CA3AF;
+  --color-gray-500: #6B7280;
+  --color-gray-600: #4B5563;
+
+  /* Font family — uses the CSS variable set by next/font in layout.tsx */
+  --font-sans: var(--font-inter), "Helvetica Neue", Arial, sans-serif;
+
+  /* Font sizes with built-in letter-spacing */
+  --font-size-xs: 11px;
+  --font-size-xs--letter-spacing: 0.05em;
+  --font-size-sm: 13px;
+  --font-size-sm--letter-spacing: 0.03em;
+
+  /* Custom spacing */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+
+  /* Custom max-width */
+  --container-content: 1440px;
+}
+
+body {
+  background: #ffffff;
+  color: #000000;
+}
