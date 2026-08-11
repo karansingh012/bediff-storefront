@@ -10,14 +10,19 @@ interface AddItemInput {
 
 interface CartStore {
   cart: CartItem[];
+  isCartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
   addItem: (input: AddItemInput) => void;
   removeItem: (id: string, selectedColor: string, selectedSize: string) => void;
   updateQty: (id: string, selectedColor: string, selectedSize: string, quantity: number) => void;
 }
 
-// Basic cart state. Persistence, totals, and Stripe payload shaping will be added next.
 export const useCartStore = create<CartStore>((set) => ({
   cart: [],
+  isCartOpen: false,
+  openCart: () => set({ isCartOpen: true }),
+  closeCart: () => set({ isCartOpen: false }),
   addItem: ({ product, selectedColor, selectedSize, quantity = 1 }) =>
     set((state) => {
       const existingItem = state.cart.find(
@@ -36,6 +41,7 @@ export const useCartStore = create<CartStore>((set) => ({
               ? { ...item, quantity: item.quantity + quantity }
               : item,
           ),
+          isCartOpen: true, // Automatically open cart on add
         };
       }
 
@@ -49,6 +55,7 @@ export const useCartStore = create<CartStore>((set) => ({
             quantity,
           },
         ],
+        isCartOpen: true,
       };
     }),
   removeItem: (id, selectedColor, selectedSize) =>
@@ -70,7 +77,8 @@ export const useCartStore = create<CartStore>((set) => ({
     })),
 }));
 
-// Derived selector — total number of items across all cart entries.
 export const useTotalQuantity = () =>
   useCartStore((state) => state.cart.reduce((sum, item) => sum + item.quantity, 0));
 
+export const useSubtotal = () =>
+  useCartStore((state) => state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0));

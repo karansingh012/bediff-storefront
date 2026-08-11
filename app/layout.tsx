@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import FilterDrawer from "@/components/FilterDrawer";
+import CartDrawer from "@/components/CartDrawer";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,6 +29,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Header />
         {children}
         <Footer />
+        <FilterDrawer />
+        <CartDrawer />
       </body>
     </html>
   );

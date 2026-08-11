@@ -1,66 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, Search, User, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTotalQuantity } from "@/lib/cartStore";
+import { useTotalQuantity, useCartStore } from "@/lib/cartStore";
+import { useUiStore } from "@/lib/uiStore";
 
-// ---------------------------------------------------------------------------
-// NAV LINKS — single source of truth for both desktop and mobile menus.
-// Add, reorder, or remove links here; JSX maps over this array.
-// ---------------------------------------------------------------------------
 const NAV_LINKS = [
-  { label: "COLLECTION", href: "/collection" },
-  { label: "SHOP", href: "/shop" },
-  { label: "BRAND", href: "/brand" },
-  { label: "INFO", href: "/info" },
+  { label: "COLLECTION", href: "#" },
+  { label: "SHOP", href: "#" },
+  { label: "BRAND", href: "#" },
+  { label: "INFO", href: "#" },
 ] as const;
 
-// ---------------------------------------------------------------------------
-// CART BADGE — small numeric indicator, only rendered when count > 0.
-// ---------------------------------------------------------------------------
 function CartBadge({ count }: { count: number }) {
   if (count === 0) return null;
   return (
-    <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center bg-black text-white text-[9px] font-medium leading-none px-1">
+    <span className="absolute -top-1.5 -right-2 flex h-4 min-w-4 items-center justify-center bg-black text-white text-[9px] font-medium leading-none px-1">
       {count}
     </span>
   );
 }
 
-// ---------------------------------------------------------------------------
-// HEADER
-// Desktop: full nav bar with left links · centered wordmark · right actions.
-// Mobile:  hamburger + wordmark + cart icon; hamburger opens full-screen menu.
-// ---------------------------------------------------------------------------
 export default function Header() {
-  // Mobile menu open/close state — only used below md breakpoint
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isMobileMenuOpen, openMobileMenu, closeMobileMenu } = useUiStore();
+  const openCart = useCartStore((state) => state.openCart);
   const totalQuantity = useTotalQuantity();
+
+  // Prevent background scrolling when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        closeMobileMenu();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileMenuOpen, closeMobileMenu]);
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-white border-b border-border">
+      <header className="sticky top-0 z-40 w-full bg-white border-b border-border">
         <div className="mx-auto flex h-[68px] max-w-content items-center justify-between px-4 md:px-6">
           {/* ───────── LEFT: Desktop nav links / Mobile hamburger ───────── */}
           <div className="flex items-center gap-7 md:w-1/3">
-            {/* Hamburger — visible only on mobile (below md) */}
             <button
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(true)}
+              type="button"
+              className="md:hidden flex items-center justify-center"
+              onClick={openMobileMenu}
               aria-label="Open navigation menu"
+              aria-expanded={isMobileMenuOpen}
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>
 
-            {/* Desktop nav links — hidden on mobile */}
             <nav className="hidden md:flex items-center gap-7" aria-label="Primary navigation">
               {NAV_LINKS.map((link) => (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
-                  className="text-xs uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors"
+                  onClick={(e) => e.preventDefault()}
+                  className="text-xs font-medium uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -68,68 +81,67 @@ export default function Header() {
             </nav>
           </div>
 
-          {/* ───────── CENTER: Wordmark — absolutely positioned so it stays
-               centred regardless of left/right content width ───────── */}
+          {/* ───────── CENTER: Wordmark ───────── */}
           <Link
             href="/"
             className="absolute left-1/2 -translate-x-1/2 text-base md:text-lg font-bold uppercase tracking-[0.18em] text-black"
+            aria-label="BEDIFF Home"
           >
             BEDIFF
           </Link>
 
           {/* ───────── RIGHT: Desktop action links / Mobile cart icon ───────── */}
           <div className="flex items-center justify-end gap-7 md:w-1/3">
-            {/* Desktop-only action links */}
             <Link
-              href="/search"
-              className="hidden md:inline-block text-xs uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors"
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="hidden md:inline-block text-xs font-medium uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors"
             >
               SEARCH
             </Link>
             <Link
-              href="/account"
-              className="hidden md:inline-block text-xs uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors"
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="hidden md:inline-block text-xs font-medium uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors"
             >
               ACCOUNT
             </Link>
 
-            {/* Cart — visible at all breakpoints */}
-            <Link href="/cart" className="relative" aria-label="Shopping cart">
-              {/* Desktop: text label, Mobile: bag icon */}
-              <span className="hidden md:inline text-xs uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors">
+            <button 
+              type="button"
+              className="relative flex items-center" 
+              aria-label="Shopping cart"
+              onClick={openCart}
+            >
+              <span className="hidden md:inline text-xs font-medium uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors pr-1">
                 CART
               </span>
               <ShoppingBag className="md:hidden" size={20} strokeWidth={1.5} />
               <CartBadge count={totalQuantity} />
-            </Link>
+            </button>
 
-            {/* Region indicator — desktop only */}
-            <span className="hidden md:inline text-xs uppercase tracking-[0.05em] text-gray-400">
+            <span className="hidden md:inline text-xs font-medium uppercase tracking-[0.05em] text-gray-400">
               INDIA
             </span>
           </div>
         </div>
       </header>
 
-      {/* ─────────────────────────────────────────────────────────────────
-          MOBILE MENU
-          Slides in from the left with framer-motion. AnimatePresence
-          handles the exit animation so the overlay doesn't disappear
-          instantly when mobileMenuOpen becomes false.
-      ───────────────────────────────────────────────────────────────── */}
+      {/* MOBILE MENU */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {isMobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 z-[60] bg-white md:hidden"
+            className="fixed inset-0 z-50 bg-white md:hidden"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
           >
-            {/* Close button — top-right corner */}
-            <div className="flex h-[68px] items-center justify-between px-4">
+            <div className="flex h-[68px] items-center justify-between px-4 border-b border-transparent">
               <button
-                onClick={() => setMobileMenuOpen(false)}
+                type="button"
+                className="flex items-center justify-center"
+                onClick={closeMobileMenu}
                 aria-label="Close navigation menu"
               >
                 <X size={22} strokeWidth={1.5} />
@@ -138,54 +150,70 @@ export default function Header() {
               <Link
                 href="/"
                 className="absolute left-1/2 -translate-x-1/2 text-base font-bold uppercase tracking-[0.18em] text-black"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
+                aria-label="BEDIFF Home"
               >
                 BEDIFF
               </Link>
 
-              <Link
-                href="/cart"
-                className="relative"
+              <button
+                type="button"
+                className="relative flex items-center justify-center"
                 aria-label="Shopping cart"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  closeMobileMenu();
+                  openCart();
+                }}
               >
                 <ShoppingBag size={20} strokeWidth={1.5} />
                 <CartBadge count={totalQuantity} />
-              </Link>
+              </button>
             </div>
 
-            {/* Stacked navigation links */}
             <nav className="flex flex-col gap-8 px-6 pt-10" aria-label="Mobile navigation">
               {NAV_LINKS.map((link) => (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
                   className="text-2xl font-medium uppercase tracking-[0.08em] text-black"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    closeMobileMenu();
+                  }}
                 >
                   {link.label}
                 </Link>
               ))}
             </nav>
 
-            {/* Secondary actions */}
             <div className="flex flex-col gap-6 px-6 pt-12 border-t border-border mt-12">
               <Link
-                href="/search"
-                className="flex items-center gap-3 text-sm uppercase tracking-[0.05em] text-black pt-6"
-                onClick={() => setMobileMenuOpen(false)}
+                href="#"
+                className="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.05em] text-black pt-6"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeMobileMenu();
+                }}
               >
                 <Search size={18} strokeWidth={1.5} />
                 SEARCH
               </Link>
               <Link
-                href="/account"
-                className="flex items-center gap-3 text-sm uppercase tracking-[0.05em] text-black"
-                onClick={() => setMobileMenuOpen(false)}
+                href="#"
+                className="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.05em] text-black"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeMobileMenu();
+                }}
               >
                 <User size={18} strokeWidth={1.5} />
                 ACCOUNT
               </Link>
+              <div className="pt-6 mt-6 border-t border-border">
+                <span className="text-sm font-medium uppercase tracking-[0.05em] text-gray-400">
+                  INDIA
+                </span>
+              </div>
             </div>
           </motion.div>
         )}
@@ -193,3 +221,4 @@ export default function Header() {
     </>
   );
 }
+

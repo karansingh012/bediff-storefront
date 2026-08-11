@@ -1,6 +1,6 @@
 import type { Product } from "@/types/product";
 
-const placeholderImage = "/products/placeholder.jpg";
+const placeholderImage = "/products/placeholder.svg";
 
 // Placeholder catalog data until BEDIFF product content and assets are added.
 export const products: Product[] = [

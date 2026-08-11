@@ -18,3 +18,4 @@ export default function HomePage({ searchParams }: HomePageProps) {
     </main>
   );
 }
+
