@@ -7,7 +7,6 @@ interface HomePageProps {
 }
 
 export default function HomePage({ searchParams }: HomePageProps) {
-  // Homepage composition for hero merchandising, product discovery, and email capture.
   void searchParams;
 
   return (
@@ -18,4 +17,3 @@ export default function HomePage({ searchParams }: HomePageProps) {
     </main>
   );
 }
-

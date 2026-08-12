@@ -13,7 +13,7 @@ export default function MegaMenu() {
 
   const handleCategoryClick = (category: string) => {
     setCategoryFilter(category);
-    router.push(`/?category=${category.toLowerCase()}#products`);
+    router.push(`/shop?category=${category.toLowerCase()}`);
     setActiveMegaMenu(null);
   };
 

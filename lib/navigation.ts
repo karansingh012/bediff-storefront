@@ -6,11 +6,12 @@ export const shopMenu = {
       title: "PRODUCT",
       links: [
         { label: "T-SHIRTS", filterCategory: "Tops" },
-        { label: "SHORTS", filterCategory: "Shorts" },
+        { label: "OUTERWEAR", filterCategory: "Outerwear" },
+        { label: "SHORTS & TIGHTS", filterCategory: "Shorts" },
+        { label: "BOTTOMS", filterCategory: "Pants" },
         { label: "VESTS", filterCategory: "Tops" },
-        { label: "TOPS", filterCategory: "Tops" },
-        { label: "PANTS", filterCategory: "Pants" },
-        { label: "HOODIES", filterCategory: "Outerwear" },
+        { label: "HEADWEAR", filterCategory: "Tops" },
+        { label: "SOCKS", filterCategory: "Tops" },
       ],
     },
     {
@@ -18,22 +19,21 @@ export const shopMenu = {
       links: [
         { label: "RUNNING", filterCategory: "Shorts" },
         { label: "TRAINING", filterCategory: "Pants" },
-        { label: "PERFORMANCE", filterCategory: "Outerwear" },
         { label: "LIFESTYLE", filterCategory: "Tops" },
       ],
     },
     {
       title: "COLLECTION",
       links: [
-        { label: "SUMMER 26", filterCategory: "Shorts" },
-        { label: "NEW ARRIVALS", filterCategory: "Outerwear" },
-        { label: "RUNNING", filterCategory: "Shorts" },
-        { label: "TRAINING", filterCategory: "Pants" },
-        { label: "BEST SELLERS", filterCategory: "Tops" },
+        { label: "BEDIFF COLLECTION", filterCategory: "" },
+        { label: "SUMMER SPORT", filterCategory: "Shorts" },
+        { label: "SPRING RUNNING", filterCategory: "Shorts" },
+        { label: "SPRING TRAINING", filterCategory: "Pants" },
+        { label: "LIMITED DROPS", filterCategory: "Outerwear" },
       ],
     },
   ],
-  image: "/products/placeholder.svg", // Fallback image from existing BEDIFF assets
+  image: "/products/placeholder.svg",
 };
 
 export const brandMenu = {
@@ -41,8 +41,10 @@ export const brandMenu = {
     {
       title: "BRAND",
       links: [
-        { label: "MEDIA", href: "/media" },
-        { label: "ABOUT", href: "/about" },
+        { label: "ABOUT BEDIFF", href: "/about" },
+        { label: "OUR STORY", href: "/brand/story" },
+        { label: "DESIGN", href: "/brand/design" },
+        { label: "PERFORMANCE", href: "/brand/performance" },
       ],
     },
   ],
@@ -56,8 +58,8 @@ export const infoMenu = {
       links: [
         { label: "SHIPPING & RETURNS", href: "/shipping" },
         { label: "CONTACT", href: "/contact" },
-        { label: "CAREERS", href: "/careers" },
         { label: "FAQ", href: "/faq" },
+        { label: "CAREERS", href: "/careers" },
       ],
     },
   ],

@@ -27,7 +27,7 @@ function MobileAccordion({ label, menuData, closeMenu }: { label: string, menuDa
 
   const handleCategoryClick = (category: string) => {
     setCategoryFilter(category);
-    router.push(`/?category=${category.toLowerCase()}#products`);
+    router.push(`/shop?category=${category.toLowerCase()}`);
     closeMenu();
   };
 
@@ -143,22 +143,13 @@ export default function Header() {
             </button>
 
             <nav className="hidden md:flex items-center gap-7" aria-label="Primary navigation">
-              <Link
-                href="/#products"
-                onClick={() => {
-                  setCategoryFilter("");
-                  setActiveMegaMenu(null);
-                }}
-                className="text-xs font-medium uppercase tracking-[0.05em] text-black hover:text-gray-500 transition-colors"
-              >
-                COLLECTION
-              </Link>
-              {["SHOP", "BRAND", "INFO"].map((label) => {
+              {/* SHOP — opens mega menu, does NOT navigate */}
+              {(["SHOP", "BRAND", "INFO"] as const).map((label) => {
                 const isActive = activeMegaMenu === label;
                 return (
                   <button
                     key={label}
-                    onClick={() => setActiveMegaMenu(isActive ? null : label as any)}
+                    onClick={() => setActiveMegaMenu(isActive ? null : label)}
                     className={`text-xs font-medium uppercase tracking-[0.05em] transition-colors ${isActive ? "text-gray-500" : "text-black hover:text-gray-500"}`}
                     aria-expanded={isActive}
                   >
@@ -268,16 +259,7 @@ export default function Header() {
             </div>
 
             <nav className="flex flex-col px-6 pt-6" aria-label="Mobile navigation">
-              <Link
-                href="/#products"
-                className="flex items-center justify-between text-xl font-medium uppercase tracking-[0.08em] text-black w-full text-left border-b border-border py-4"
-                onClick={(e) => {
-                  setCategoryFilter("");
-                  closeMobileMenu();
-                }}
-              >
-                COLLECTION
-              </Link>
+              {/* SHOP — opens accordion with shop categories on mobile */}
               <MobileAccordion label="SHOP" menuData={shopMenu} closeMenu={closeMobileMenu} />
               <MobileAccordion label="BRAND" menuData={brandMenu} closeMenu={closeMobileMenu} />
               <MobileAccordion label="INFO" menuData={infoMenu} closeMenu={closeMobileMenu} />

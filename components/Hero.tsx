@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useUiStore } from "@/lib/uiStore";
+import Link from "next/link";
 
 interface HeroProps {
   className?: string;
 }
 
 export default function Hero({ className = "" }: HeroProps) {
-  const openFilter = useUiStore((state) => state.openFilter);
 
   // NOTE: Assets are currently pointing to fallbacks. 
   // A final /hero-desktop.jpg and /hero-mobile.mp4 should be added to the public folder.
@@ -51,26 +50,16 @@ export default function Hero({ className = "" }: HeroProps) {
         pointer-events-none on the container ensures the media underneath could be interacted with,
         while pointer-events-auto on the children makes the button clickable.
       */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Bottom Left: Wordmark & Season */}
-        <div className="absolute bottom-0 left-0 p-4 md:p-6 pointer-events-auto">
-          <div className="flex flex-col text-white text-xs font-medium uppercase tracking-[0.05em]">
-            <span>BEDIFF</span>
-            <span>SUMMER 26</span>
-          </div>
-        </div>
-
-        {/* Bottom Right: Filter Control */}
-        <div className="absolute bottom-0 right-0 p-4 md:p-6 pointer-events-auto">
-          <button
-            type="button"
-            onClick={openFilter}
-            className="text-white text-xs font-medium uppercase tracking-[0.05em] hover:text-gray-300 transition-colors"
-            aria-label="Open filters"
-          >
-            FILTER
-          </button>
-        </div>
+      <div className="absolute inset-0 pointer-events-none flex flex-col justify-end items-center pb-12 md:pb-16 gap-6">
+        <h1 className="text-white text-4xl md:text-6xl font-bold uppercase tracking-[0.15em] pointer-events-auto">
+          DELHI
+        </h1>
+        <Link
+          href="/shop"
+          className="text-black bg-white text-xs font-bold uppercase tracking-[0.05em] px-8 py-3 hover:bg-gray-200 transition-colors pointer-events-auto"
+        >
+          SHOP
+        </Link>
       </div>
     </section>
   );

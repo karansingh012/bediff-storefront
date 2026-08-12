@@ -9,19 +9,21 @@ import { Loader2 } from "lucide-react";
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [emailExists, setEmailExists] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setMessage("");
+    setEmailExists(false);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -35,26 +37,35 @@ export default function SignupPage() {
       return;
     }
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      }
-    });
+    try {
+      // Use the new server-side signup endpoint
+      const signupRes = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (signUpError) {
-      setError(signUpError.message);
-    } else {
+      const result = await signupRes.json();
+
+      if (!signupRes.ok) {
+        if (result.code === "EMAIL_ALREADY_REGISTERED") {
+          setEmailExists(true);
+        } else {
+          setError(result.error || result.message || "Failed to create account");
+        }
+        setLoading(false);
+        return;
+      }
+
       setMessage("Registration successful! You can now log in.");
-      // Optional: Supabase might auto-login if email confirmations are off.
-      // We will redirect to account after 2 seconds just in case.
       setTimeout(() => {
-        router.push("/account");
+        router.push("/account/login");
         router.refresh();
       }, 2000);
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
     }
-    
+
     setLoading(false);
   };
 
@@ -107,9 +118,19 @@ export default function SignupPage() {
             />
           </div>
 
-          {error && (
+          {error && !emailExists && (
             <div className="p-4 border border-red-500 bg-red-50 text-xs text-red-500 uppercase tracking-[0.05em] font-medium text-center">
               {error}
+            </div>
+          )}
+
+          {emailExists && (
+            <div className="px-4 py-2.5 border border-red-500 bg-red-50 text-[10px] sm:text-xs text-red-500 uppercase tracking-[0.05em] font-medium text-center flex flex-col gap-1">
+              <span className="font-bold">EMAIL ALREADY REGISTERED</span>
+              <span>This email is already registered. Please sign in.</span>
+              <Link href="/account/login" className="font-bold underline hover:text-red-700 transition-colors">
+                SIGN IN
+              </Link>
             </div>
           )}
 
