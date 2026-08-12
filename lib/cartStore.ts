@@ -16,6 +16,7 @@ interface CartStore {
   addItem: (input: AddItemInput) => void;
   removeItem: (id: string, selectedColor: string, selectedSize: string) => void;
   updateQty: (id: string, selectedColor: string, selectedSize: string, quantity: number) => void;
+  clearCart: () => void;
 }
 
 export const useCartStore = create<CartStore>((set) => ({
@@ -23,6 +24,7 @@ export const useCartStore = create<CartStore>((set) => ({
   isCartOpen: false,
   openCart: () => set({ isCartOpen: true }),
   closeCart: () => set({ isCartOpen: false }),
+  clearCart: () => set({ cart: [] }),
   addItem: ({ product, selectedColor, selectedSize, quantity = 1 }) =>
     set((state) => {
       const existingItem = state.cart.find(

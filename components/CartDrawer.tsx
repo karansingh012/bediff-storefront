@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Lock } from "lucide-react";
 import { useCartStore, useSubtotal, useTotalQuantity } from "@/lib/cartStore";
@@ -10,7 +11,7 @@ export default function CartDrawer() {
   const { isCartOpen, closeCart, cart } = useCartStore();
   const subtotal = useSubtotal();
   const totalQuantity = useTotalQuantity();
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (isCartOpen) {
@@ -39,33 +40,9 @@ export default function CartDrawer() {
     }).format(price);
   };
 
-  const handleCheckout = async () => {
-    setCheckoutLoading(true);
-    
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ items: cart }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create checkout session");
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert(error instanceof Error ? error.message : "An error occurred during checkout");
-    } finally {
-      setCheckoutLoading(false);
-    }
+  const handleCheckout = () => {
+    closeCart();
+    router.push("/checkout");
   };
 
   return (
@@ -153,11 +130,11 @@ export default function CartDrawer() {
                   <button
                     type="button"
                     onClick={handleCheckout}
-                    disabled={checkoutLoading || cart.length === 0}
+                    disabled={cart.length === 0}
                     className="w-full py-4 bg-black text-white text-xs font-medium uppercase tracking-[0.05em] hover:bg-gray-800 transition-colors rounded-none disabled:bg-gray-300 flex justify-center items-center gap-2"
                   >
                     <Lock size={14} strokeWidth={1.5} />
-                    {checkoutLoading ? "PROCESSING..." : "CHECKOUT"}
+                    CHECKOUT
                   </button>
                   <button
                     type="button"

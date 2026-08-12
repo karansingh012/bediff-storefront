@@ -17,10 +17,10 @@ export default function CheckoutCancelPage() {
         </div>
 
         <Link
-          href="/"
+          href="/checkout"
           className="mt-8 px-8 py-4 bg-white border border-black text-black text-xs font-medium uppercase tracking-[0.05em] hover:bg-gray-50 transition-colors inline-block"
         >
-          RETURN TO CART
+          RETRY PAYMENT
         </Link>
       </div>
     </div>

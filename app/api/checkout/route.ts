@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { cashfree } from "@/lib/cashfree";
 import { products } from "@/lib/products";
 import type { CartItem } from "@/types/product";
+import crypto from "crypto";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { items } = body as { items: CartItem[] };
+    const { items, customer } = body as { items: CartItem[], customer: any };
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
@@ -15,7 +17,25 @@ export async function POST(request: Request) {
       );
     }
 
-    const lineItems: any[] = [];
+    if (!customer || !customer.email || !customer.fullName || !customer.phone || !customer.address1 || !customer.city || !customer.state || !customer.pinCode) {
+      return NextResponse.json(
+        { error: "Customer information is incomplete" },
+        { status: 400 }
+      );
+    }
+
+    // Server-side validation for customer
+    if (!/^\S+@\S+\.\S+$/.test(customer.email)) {
+      return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+    }
+    if (!/^[6-9]\d{9}$/.test(customer.phone)) {
+      return NextResponse.json({ error: "Invalid phone format" }, { status: 400 });
+    }
+    if (!/^\d{6}$/.test(customer.pinCode)) {
+      return NextResponse.json({ error: "Invalid PIN format" }, { status: 400 });
+    }
+
+    let orderAmount = 0;
 
     // Validate each item against our trusted product catalog
     for (const item of items) {
@@ -61,40 +81,106 @@ export async function POST(request: Request) {
         }
       }
 
-      // Construct Stripe line item using trusted server-side price
-      lineItems.push({
-        price_data: {
-          currency: "inr", // Assuming INR based on user prompt
-          product_data: {
-            name: product.name,
-            description: `Color: ${item.selectedColor}${
-              item.selectedSize ? ` | Size: ${item.selectedSize}` : ""
-            }`,
-          },
-          unit_amount: product.price * 100, // Stripe expects amounts in cents/paise
-        },
-        quantity: item.quantity,
-      });
+      orderAmount += product.price * item.quantity;
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const shipping = 0; // Free shipping placeholder
+    const grandTotal = orderAmount + shipping;
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: lineItems,
-      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/checkout/cancel`,
-      metadata: {
-        // Here we could store a generic order reference
-        // order_id: generateOrderId(),
-        cart_summary: items.map((i) => `${i.id}(${i.quantity})`).join(", "),
-      },
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const orderId = `BEDIFF_${crypto.randomUUID().replace(/-/g, "")}`;
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Create order in DB
+    const orderData = {
+      user_id: user?.id || null,
+      order_number: orderId,
+      status: 'PENDING',
+      payment_status: 'PENDING',
+      payment_provider: 'CASHFREE',
+      subtotal: orderAmount,
+      shipping_amount: shipping,
+      total_amount: grandTotal,
+      currency: 'INR',
+      shipping_name: customer.fullName,
+      shipping_phone: customer.phone,
+      shipping_address_line_1: customer.address1,
+      shipping_address_line_2: customer.address2 || null,
+      shipping_city: customer.city,
+      shipping_state: customer.state,
+      shipping_postal_code: customer.pinCode,
+      shipping_country: customer.country,
+    };
+
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert(orderData)
+      .select()
+      .single();
+
+    if (orderError || !order) {
+      console.error("Order creation failed:", orderError);
+      return NextResponse.json(
+        { error: "Failed to create order" },
+        { status: 500 }
+      );
+    }
+
+    const orderItems = items.map(item => {
+      const product = products.find((p) => p.id === item.id)!;
+      return {
+        order_id: order.id,
+        product_id: item.id,
+        product_name: product.name,
+        product_slug: product.slug,
+        size: item.selectedSize || null,
+        color: item.selectedColor || null,
+        quantity: item.quantity,
+        unit_price: product.price,
+        total_price: product.price * item.quantity,
+        image: item.images[0] || null,
+      };
     });
 
-    return NextResponse.json({ url: session.url });
-  } catch (error) {
-    console.error("Checkout API Error:", error);
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (itemsError) {
+      console.error("Order items creation failed:", itemsError);
+      return NextResponse.json(
+        { error: "Failed to save order items" },
+        { status: 500 }
+      );
+    }
+
+    // Create Cashfree Order
+    const requestObject = {
+      order_amount: grandTotal,
+      order_currency: "INR",
+      order_id: orderId,
+      customer_details: {
+        customer_id: user ? user.id : `CUST_${crypto.randomUUID().split("-")[0]}`,
+        customer_email: customer.email,
+        customer_phone: customer.phone,
+        customer_name: customer.fullName,
+      },
+      order_meta: {
+        return_url: `${baseUrl}/checkout/success?order_id=${orderId}`,
+      },
+    };
+
+    const response = await cashfree.PGCreateOrder(requestObject);
+    
+    // Return payment session ID to frontend
+    return NextResponse.json({ 
+      payment_session_id: response.data.payment_session_id,
+      order_id: orderId
+    });
+  } catch (error: any) {
+    console.error("Checkout API Error:", error?.response?.data || error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

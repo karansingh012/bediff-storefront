@@ -30,10 +30,10 @@ export default function Footer({ className = "" }: FooterProps) {
             <div className="flex flex-col gap-5">
               <h4 className="text-xs font-medium uppercase tracking-[0.05em] text-black">HELP</h4>
               <nav className="flex flex-col gap-4" aria-label="Help navigation">
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">FAQ</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Shipping</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Returns</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Contact</Link>
+                <Link href="/faq" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">FAQ</Link>
+                <Link href="/shipping" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Shipping</Link>
+                <Link href="/returns" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Returns</Link>
+                <Link href="/contact" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Contact</Link>
               </nav>
             </div>
 
@@ -41,10 +41,10 @@ export default function Footer({ className = "" }: FooterProps) {
             <div className="flex flex-col gap-5">
               <h4 className="text-xs font-medium uppercase tracking-[0.05em] text-black">INFO</h4>
               <nav className="flex flex-col gap-4" aria-label="Info navigation">
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">About Us</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Sustainability</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Careers</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()} className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Atelier</Link>
+                <Link href="/about" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">About Us</Link>
+                <Link href="/sustainability" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Sustainability</Link>
+                <Link href="/careers" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Careers</Link>
+                <Link href="/atelier" className="text-sm text-gray-500 hover:text-black transition-colors focus:outline-none focus:text-black">Atelier</Link>
               </nav>
             </div>
 

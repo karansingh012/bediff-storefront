@@ -11,7 +11,7 @@ export const products: Product[] = [
     price: 2499,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-split-short.png", placeholderImage],
     category: "Shorts",
   },
   {
@@ -21,7 +21,7 @@ export const products: Product[] = [
     price: 1999,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-running-vest.png", placeholderImage],
     category: "Tops",
   },
   {
@@ -31,7 +31,7 @@ export const products: Product[] = [
     price: 2299,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-air-short.png", placeholderImage],
     category: "Shorts",
   },
   {
@@ -41,7 +41,7 @@ export const products: Product[] = [
     price: 2799,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-race-short.png", placeholderImage],
     category: "Shorts",
   },
   {
@@ -51,7 +51,7 @@ export const products: Product[] = [
     price: 2199,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-performance-tee.png", placeholderImage],
     category: "Tops",
   },
   {
@@ -61,7 +61,7 @@ export const products: Product[] = [
     price: 1899,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-mesh-top.png", placeholderImage],
     category: "Tops",
   },
   {
@@ -71,7 +71,7 @@ export const products: Product[] = [
     price: 3499,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-training-pant.png", placeholderImage],
     category: "Pants",
   },
   {
@@ -81,7 +81,7 @@ export const products: Product[] = [
     price: 4499,
     colors: ["Black", "White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [placeholderImage],
+    images: ["/products/bediff-performance-hoodie.png", placeholderImage],
     category: "Outerwear",
   },
 ];

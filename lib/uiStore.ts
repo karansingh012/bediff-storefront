@@ -21,6 +21,16 @@ interface UiStore {
   activeFilters: FilterState;
   toggleFilter: (type: keyof FilterState, value: string) => void;
   clearFilters: () => void;
+
+  // Search
+  isSearchOpen: boolean;
+  openSearch: () => void;
+  closeSearch: () => void;
+
+  // Mega Menu
+  activeMegaMenu: "SHOP" | "BRAND" | "INFO" | null;
+  setActiveMegaMenu: (menu: "SHOP" | "BRAND" | "INFO" | null) => void;
+  setCategoryFilter: (category: string) => void;
 }
 
 export const useUiStore = create<UiStore>((set) => ({
@@ -58,5 +68,21 @@ export const useUiStore = create<UiStore>((set) => ({
         colors: [],
         sizes: [],
       },
+    }),
+
+  isSearchOpen: false,
+  openSearch: () => set({ isSearchOpen: true }),
+  closeSearch: () => set({ isSearchOpen: false }),
+
+  activeMegaMenu: null,
+  setActiveMegaMenu: (menu) => set({ activeMegaMenu: menu }),
+  setCategoryFilter: (category) =>
+    set({
+      activeFilters: {
+        categories: [category], // overwrite with just this category
+        colors: [],
+        sizes: [],
+      },
+      activeMegaMenu: null, // close menu on selection
     }),
 }));
